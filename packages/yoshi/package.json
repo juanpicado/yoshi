@@ -104,6 +104,8 @@
     "react-hot-loader": "4.7.1",
     "rtlcss-webpack-plugin": "4.0.0",
     "ruby-haml-loader": "1.0.0",
+    "sockjs": "0.3.19",
+    "sockjs-client": "1.3.0",
     "stylelint": "9.10.1",
     "stylelint-config-yoshi": "4.1.0-alpha.5",
     "stylelint-prettier": "1.0.6",
