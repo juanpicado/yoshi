@@ -2,8 +2,8 @@ const fs = require('fs-extra');
 const path = require('path');
 const globby = require('globby');
 const webpack = require('webpack');
-const { isObject } = require('lodash');
 const nodeExternals = require('webpack-node-externals');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -101,18 +101,6 @@ function exists(entry) {
 // We currently can't support static public path of packages that deploy to unpkg
 
 const stylableSeparateCss = project.enhancedTpaStyle;
-
-const defaultSplitChunksConfig = {
-  chunks: 'all',
-  name: 'commons',
-  minChunks: 2,
-};
-
-const useSplitChunks = project.splitChunks;
-
-const splitChunksConfig = isObject(useSplitChunks)
-  ? useSplitChunks
-  : defaultSplitChunksConfig;
 
 const entry = project.entry || project.defaultEntry;
 
@@ -482,7 +470,7 @@ function createCommonWebpackConfig({
 
             // Rules for HTML
             {
-              test: /\.html$/,
+              test: /\.(html|ejs)$/,
               loader: 'html-loader',
             },
 
@@ -560,7 +548,6 @@ function createClientWebpackConfig({
 
     optimization: {
       minimize: !isDebug,
-      splitChunks: useSplitChunks ? splitChunksConfig : false,
       concatenateModules: isProduction && !disableModuleConcat,
       minimizer: [
         new TerserPlugin({
@@ -582,6 +569,14 @@ function createClientWebpackConfig({
         // https://github.com/NMFR/optimize-css-assets-webpack-plugin
         new OptimizeCSSAssetsPlugin(),
       ],
+
+      // Automatically split vendor and commons
+      // https://twitter.com/wSokra/status/969633336732905474
+      // https://medium.com/webpack/webpack-4-code-splitting-chunk-graph-and-the-splitchunks-optimization-be739a861366
+      splitChunks: {
+        chunks: 'all',
+        name: false,
+      },
     },
 
     output: {
@@ -605,6 +600,44 @@ function createClientWebpackConfig({
 
     plugins: [
       ...config.plugins,
+
+      // https://github.com/jantimon/html-webpack-plugin
+      ...globby
+        .sync('**/*.+(ejs|vm)', { cwd: config.context })
+        .map(templatePath => {
+          const basename = path.basename(templatePath);
+
+          return new HtmlWebpackPlugin({
+            // Generate a `filename.debug.ejs` for non-minified compilation
+            filename: isDebug
+              ? basename.replace(/\.[0-9a-z]+$/i, match => `.debug${match}`)
+              : basename,
+            // Only use chunks from the entry with the same name as the template
+            // file
+            chunks: [basename.replace(/\.[0-9a-z]+$/i, '')],
+            template: templatePath,
+            minify: !isDebug,
+          });
+        }),
+
+      new class HtmlPolyfillsPlugin {
+        apply(compiler) {
+          compiler.hooks.compilation.tap('HtmlPolyfillsPlugin', compilation => {
+            const hooks = HtmlWebpackPlugin.getHooks(compilation);
+
+            hooks.beforeAssetTagGeneration.tap(
+              'HtmlPolyfillsPlugin',
+              ({ assets }) => {
+                assets.js.unshift(
+                  'https://static.parastorage.com/polyfill/v2/polyfill.min.js?features=default,es6,es7,es2017&flags=gated&unknown=polyfill&rum=0',
+                );
+              },
+            );
+          });
+        }
+      }(),
+
+      // new MultipleEntriesPlugin(HtmlWebpackPlugin),
 
       // https://github.com/gajus/write-file-webpack-plugin
       new WriteFilePlugin({

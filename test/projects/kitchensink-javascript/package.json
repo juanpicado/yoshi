@@ -39,8 +39,6 @@
       "other": "./other"
     },
     "externals": {
-      "react": "React",
-      "react-dom": "ReactDOM",
       "externals": "externals"
     },
     "hmr": "auto"
