@@ -123,8 +123,6 @@ You can specify multiple entry points in your `package.json` file. This gives th
 }
 ```
 
-**Note:** if you have multiple entries you should consider using the [`optimization.splitChunks`](https://gist.github.com/sokra/1522d586b8e5c0f5072d7565c2bee693)
-
 **Note2:** the decision whether to use `TypeScript` or `babel` is done by searching `tsconfig.json` inside the root directory.
 
 ## test

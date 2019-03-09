@@ -59,18 +59,6 @@ By default, your `require`d css will bundled to a separate `app.css` bundle. You
 }
 ```
 
-## splitChunks
-
-Configure webpack's `optimization.splitChunks` option. It's an opt-in feature that creates a separate file (known as a chunk), consisting of common modules shared between multiple entry points.
-
-Supports both `false` value _(default)_, `true` and a [configuration object](https://gist.github.com/sokra/1522d586b8e5c0f5072d7565c2bee693#configuration):
-
-```json
-"yoshi": {
-  "splitChunks": true
-  }
-```
-
 ## cssModules
 
 We use [css modules](https://github.com/css-modules/css-modules) as default. You can disable this option any time by adding the following to wix section inside your `package.json`:
