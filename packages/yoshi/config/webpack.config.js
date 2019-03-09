@@ -16,6 +16,7 @@ const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
 const WriteFilePlugin = require('write-file-webpack-plugin');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const HtmlPolyfillPlugin = require('./html-polyfill-plugin');
 const { localIdentName } = require('../src/constants');
 const EnvirnmentMarkPlugin = require('../src/webpack-plugins/environment-mark-plugin');
 const {
@@ -620,24 +621,10 @@ function createClientWebpackConfig({
           });
         }),
 
-      new class HtmlPolyfillsPlugin {
-        apply(compiler) {
-          compiler.hooks.compilation.tap('HtmlPolyfillsPlugin', compilation => {
-            const hooks = HtmlWebpackPlugin.getHooks(compilation);
-
-            hooks.beforeAssetTagGeneration.tap(
-              'HtmlPolyfillsPlugin',
-              ({ assets }) => {
-                assets.js.unshift(
-                  'https://static.parastorage.com/polyfill/v2/polyfill.min.js?features=default,es6,es7,es2017&flags=gated&unknown=polyfill&rum=0',
-                );
-              },
-            );
-          });
-        }
-      }(),
-
-      // new MultipleEntriesPlugin(HtmlWebpackPlugin),
+      // Polyfill via https://polyfill.io
+      new HtmlPolyfillPlugin(HtmlWebpackPlugin, [
+        'https://static.parastorage.com/polyfill/v2/polyfill.min.js?features=default,es6,es7,es2017&flags=gated&unknown=polyfill&rum=0',
+      ]),
 
       // https://github.com/gajus/write-file-webpack-plugin
       new WriteFilePlugin({
