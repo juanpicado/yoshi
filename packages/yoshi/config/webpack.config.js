@@ -548,6 +548,7 @@ function createClientWebpackConfig({
 
     optimization: {
       minimize: !isDebug,
+      // https://webpack.js.org/plugins/module-concatenation-plugin
       concatenateModules: isProduction && !disableModuleConcat,
       minimizer: [
         new TerserPlugin({
@@ -570,9 +571,7 @@ function createClientWebpackConfig({
         new OptimizeCSSAssetsPlugin(),
       ],
 
-      // Automatically split vendor and commons
-      // https://twitter.com/wSokra/status/969633336732905474
-      // https://medium.com/webpack/webpack-4-code-splitting-chunk-graph-and-the-splitchunks-optimization-be739a861366
+      // https://webpack.js.org/plugins/split-chunks-plugin
       splitChunks: {
         // Currently, libraries cannot have initial chunks
         chunks: project.exports ? 'async' : 'all',
