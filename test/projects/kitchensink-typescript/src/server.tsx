@@ -1,15 +1,15 @@
-import ejs from 'ejs';
 import express from 'express';
+import { renderFile } from './utils';
 
 const app = express();
 
 app.get('/other', async (req, res) => {
-  res.send(await ejs.renderFile('./src/other.ejs'));
+  res.send(await renderFile('other.ejs'));
 });
 
 app.get('*', async (req, res) => {
   res.send(
-    await ejs.renderFile('./src/index.ejs', {
+    await renderFile('app.ejs', {
       title: 'Some title',
     }),
   );
