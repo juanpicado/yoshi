@@ -46,9 +46,6 @@ const extensions = ['.js', '.jsx', '.ts', '.tsx', '.json'];
 
 const babelConfig = createBabelConfig({ modules: false });
 
-const disableTsThreadOptimization =
-  process.env.DISABLE_TS_THREAD_OPTIMIZATION === 'true';
-
 const disableModuleConcat = process.env.DISABLE_MODULE_CONCATENATION === 'true';
 
 const isProduction = checkIsProduction();
@@ -359,16 +356,12 @@ function createCommonWebpackConfig({
           test: /\.(ts|tsx)$/,
           exclude: /(node_modules)/,
           use: [
-            ...(disableTsThreadOptimization
-              ? []
-              : [
-                  {
-                    loader: 'thread-loader',
-                    options: {
-                      workers: require('os').cpus().length - 1,
-                    },
-                  },
-                ]),
+            {
+              loader: 'thread-loader',
+              options: {
+                workers: require('os').cpus().length - 1,
+              },
+            },
 
             // https://github.com/huston007/ng-annotate-loader
             ...(project.isAngularProject
@@ -379,7 +372,7 @@ function createCommonWebpackConfig({
               loader: 'ts-loader',
               options: {
                 // This implicitly sets `transpileOnly` to `true`
-                happyPackMode: !disableTsThreadOptimization,
+                happyPackMode: true,
                 compilerOptions: project.isAngularProject
                   ? {}
                   : {
