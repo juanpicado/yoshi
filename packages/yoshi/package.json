@@ -10,7 +10,6 @@
     "url": "https://github.com/wix/yoshi"
   },
   "scripts": {
-    "pretest": "patch ./node_modules/jest-config/build/normalize.js < normalize.patch && echo Sababa",
     "test": "DISABLE_SENTRY=1 mocha './+(test|src)/{,!(fixtures)/**/}/*.spec.js' --retries=$([ -z \"$TEAMCITY_VERSION\" ] && echo 0 || echo 1)"
   },
   "files": [
