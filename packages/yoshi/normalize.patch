@@ -1,0 +1,18 @@
+--- ./packages/yoshi/node_modules/jest-config/build/normalize.js	2019-03-24 09:27:00.000000000 +0200
++++ ./packages/yoshi/node_modules/jest-config/build/normalize.js.org	2019-03-24 09:27:15.000000000 +0200
+@@ -200,7 +200,6 @@
+ 
+   try {
+     // Force re-evaluation to support multiple projects
+-    console.log('Trying presetModule', presetModule);
+     try {
+       if (presetModule) {
+         delete require.cache[require.resolve(presetModule)];
+@@ -209,7 +208,6 @@
+ 
+     preset = require(presetModule);
+   } catch (error) {
+-    console.log('Preset error', error);
+     if (error instanceof SyntaxError || error instanceof TypeError) {
+       throw createConfigError(
+         `  Preset ${_chalk().default.bold(presetPath)} is invalid:\n\n  ${
