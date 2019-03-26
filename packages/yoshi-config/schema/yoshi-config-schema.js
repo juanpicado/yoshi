@@ -15,6 +15,8 @@ const schema = {
         'Whether to separate the bundle for css files from the main js bundle.',
       enum: ['prod', false, true],
     },
+    splitChunks:
+      webpackOptions.definitions.OptimizationOptions.properties.splitChunks,
     cssModules: {
       description: 'Whether to use css modules. On by default.',
       type: 'boolean',

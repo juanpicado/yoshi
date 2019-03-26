@@ -76,6 +76,7 @@ const loadConfig = ({ validate, useCache } = { validate: false }) => {
       },
     },
     entry: getConfig('entry'),
+    splitChunks: getConfig('splitChunks', false),
     defaultEntry: './client',
     separateCss: getConfig('separateCss', true),
     cssModules: getConfig('cssModules', true),
