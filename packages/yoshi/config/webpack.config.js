@@ -613,29 +613,24 @@ function createClientWebpackConfig({
       ...config.plugins,
 
       // https://github.com/jantimon/html-webpack-plugin
-      ...(fs.existsSync(config.context)
-        ? [
-            globby
-              .sync('**/*.+(ejs|vm)', { cwd: config.context })
-              .map(templatePath => {
-                const basename = path.basename(templatePath);
+      ...(fs.pathExistsSync(config.context)
+        ? globby
+            .sync('**/*.+(ejs|vm)', { cwd: config.context })
+            .map(templatePath => {
+              const basename = path.basename(templatePath);
 
-                return new HtmlWebpackPlugin({
-                  // Generate a `filename.debug.ejs` for non-minified compilation
-                  filename: isDebug
-                    ? basename.replace(
-                        /\.[0-9a-z]+$/i,
-                        match => `.debug${match}`,
-                      )
-                    : basename,
-                  // Only use chunks from the entry with the same name as the template
-                  // file
-                  chunks: [basename.replace(/\.[0-9a-z]+$/i, '')],
-                  template: templatePath,
-                  minify: !isDebug,
-                });
-              }),
-          ]
+              return new HtmlWebpackPlugin({
+                // Generate a `filename.debug.ejs` for non-minified compilation
+                filename: isDebug
+                  ? basename.replace(/\.[0-9a-z]+$/i, match => `.debug${match}`)
+                  : basename,
+                // Only use chunks from the entry with the same name as the template
+                // file
+                chunks: [basename.replace(/\.[0-9a-z]+$/i, '')],
+                template: templatePath,
+                minify: !isDebug,
+              });
+            })
         : []),
 
       // Polyfill via https://polyfill.io
