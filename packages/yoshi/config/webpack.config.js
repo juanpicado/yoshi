@@ -2,6 +2,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const globby = require('globby');
 const webpack = require('webpack');
+const { isObject } = require('lodash');
 const buildUrl = require('build-url');
 const nodeExternals = require('webpack-node-externals');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -103,6 +104,18 @@ function exists(entry) {
 // We currently can't support static public path of packages that deploy to unpkg
 
 const stylableSeparateCss = project.enhancedTpaStyle;
+
+const defaultSplitChunksConfig = {
+  chunks: 'all',
+  name: 'commons',
+  minChunks: 2,
+};
+
+const useSplitChunks = project.splitChunks;
+
+const splitChunksConfig = isObject(useSplitChunks)
+  ? useSplitChunks
+  : defaultSplitChunksConfig;
 
 const entry = project.entry || project.defaultEntry;
 
@@ -574,11 +587,7 @@ function createClientWebpackConfig({
       ],
 
       // https://webpack.js.org/plugins/split-chunks-plugin
-      splitChunks: {
-        // Currently, libraries cannot have initial chunks
-        chunks: project.exports ? 'async' : 'all',
-        name: false,
-      },
+      splitChunks: useSplitChunks ? splitChunksConfig : false,
     },
 
     output: {
