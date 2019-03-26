@@ -38,6 +38,16 @@ const wixDepCheck = require('../tasks/dep-check');
 
 const inTeamCity = checkInTeamCity();
 
+const copyTemplates = async () => {
+  const files = await globby('**/*.{ejs,vm}', { cwd: SRC_DIR });
+
+  await Promise.all(
+    files.map(file => {
+      return fs.copy(path.join(SRC_DIR, file), path.join(STATICS_DIR, file));
+    }),
+  );
+};
+
 module.exports = async () => {
   // Clean tmp folders
   await Promise.all([fs.emptyDir(BUILD_DIR), fs.emptyDir(TARGET_DIR)]);
@@ -47,7 +57,7 @@ module.exports = async () => {
     await fs.copy(PUBLIC_DIR, ASSETS_DIR);
   }
 
-  await wixDepCheck();
+  await Promise.all([wixDepCheck(), copyTemplates()]);
 
   // Run CI related updates
   if (inTeamCity) {

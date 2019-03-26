@@ -99,6 +99,7 @@ module.exports = runner.command(
         {
           pattern: [
             `${globs.base}/assets/**/*`,
+            `${globs.base}/**/*.{ejs,html,vm}`,
             `${globs.base}/**/*.{css,json,d.ts}`,
           ],
           target: 'dist',
@@ -107,14 +108,17 @@ module.exports = runner.command(
       ),
       copy(
         {
-          pattern: [`${globs.assetsLegacyBase}/assets/**/*`],
+          pattern: [
+            `${globs.assetsLegacyBase}/assets/**/*`,
+            `${globs.assetsLegacyBase}/**/*.{ejs,html,vm}`,
+          ],
           target: 'dist/statics',
         },
         { title: 'copy-static-assets-legacy', log: false },
       ),
       copy(
         {
-          pattern: [`assets/**/*`],
+          pattern: [`assets/**/*`, `**/*.{ejs,html,vm}`],
           source: globs.assetsBase,
           target: 'dist/statics',
         },
